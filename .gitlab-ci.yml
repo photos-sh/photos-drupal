@@ -14,7 +14,6 @@ include:
 variables:
   # The module needs PHP 8.3 or later.
   _TARGET_PHP: '8.3'
-  # Test against the lowest and the highest supported core.
-  OPT_IN_TEST_PREVIOUS_MAJOR: '1'
+  # Besides the current core: its next minor, and the highest PHP.
   OPT_IN_TEST_NEXT_MINOR: '1'
   OPT_IN_TEST_MAX_PHP: '1'

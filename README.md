@@ -6,7 +6,7 @@ remove text and watermarks, fix a photo for a marketplace, run a preset, fix
 light and colour, remove noise, colourise, restore or hide faces, crop or
 expand to a shape, and write a text on a photo.
 
-- Drupal 10.3 or 11, PHP 8.3 or later.
+- Drupal 11, PHP 8.3 or later.
 - An image toolkit: GD (Drupal's default) or the
   [ImageMagick](https://www.drupal.org/project/imagemagick) module's toolkit
   (see Toolkits below). The ImageMagick module is optional.
@@ -120,7 +120,7 @@ The effects work with:
   the "JPEG quality" setting of GD (default 75).
 - **ImageMagick**, from the contrib module
   [`drupal/imagemagick`](https://www.drupal.org/project/imagemagick) (4.x on
-  Drupal 10.3 and 11.0 to 11.2, 5.x on 11.3 and later; the module is not
+  Drupal 11.0 to 11.2, 5.x on 11.3 and later; the module is not
   required). That toolkit does not hold pixels: it queues command line
   arguments and runs `magick` or `convert` once, when the image is saved. So
   to send the image, the queued operations are run once into a temporary file

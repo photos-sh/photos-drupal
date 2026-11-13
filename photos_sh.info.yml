@@ -2,7 +2,7 @@ name: Photos.sh
 type: module
 description: 'Image effects powered by the Photos.sh API: remove backgrounds, upscale, remove text, fix photos for marketplaces.'
 package: Media
-core_version_requirement: ^10.3 || ^11
+core_version_requirement: ^11
 php: 8.3
 configure: photos_sh.settings
 dependencies:

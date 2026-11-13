@@ -24,6 +24,6 @@ First release.
 - `photos_sh.client` service (a `PhotosSh\Photos` client) for other modules.
 - Permission `administer photos_sh`; configuration schema for the settings and
   every effect.
-- Supports Drupal 10.3 and 11, PHP 8.3+. The effects work with the GD toolkit and with the
+- Supports Drupal 11, PHP 8.3+. The effects work with the GD toolkit and with the
   ImageMagick module's toolkit (optional; any other toolkit makes the effect fail with a log
   message naming it).

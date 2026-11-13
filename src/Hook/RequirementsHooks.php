@@ -15,7 +15,7 @@ use Drupal\photos_sh\ConnectionStatus;
  * The Photos.sh line on the status report.
  *
  * On Drupal 11.3 and later this class is the hook implementation. On older
- * versions (10.3 to 11.2, which do not know runtime_requirements or, before
+ * versions (11.0 to 11.2, which do not know runtime_requirements or, before
  * 11.1, OOP hooks) photos_sh.install calls it from hook_requirements().
  */
 class RequirementsHooks {
