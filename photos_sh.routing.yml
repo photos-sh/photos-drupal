@@ -1,0 +1,7 @@
+photos_sh.settings:
+  path: '/admin/config/media/photos-sh'
+  defaults:
+    _form: '\Drupal\photos_sh\Form\SettingsForm'
+    _title: 'Photos.sh'
+  requirements:
+    _permission: 'administer photos_sh'

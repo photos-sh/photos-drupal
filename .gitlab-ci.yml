@@ -1,0 +1,20 @@
+# Drupal.org GitLab CI, using the templates maintained by the Drupal Association.
+# https://www.drupal.org/docs/develop/git/using-gitlab-to-contribute-to-drupal/gitlab-ci
+#
+# The module requires photos-sh/photos, which Composer installs from Packagist.
+
+include:
+  - project: $_GITLAB_TEMPLATES_REPO
+    ref: $_GITLAB_TEMPLATES_REF
+    file:
+      - '/includes/include.drupalci.main.yml'
+      - '/includes/include.drupalci.variables.yml'
+      - '/includes/include.drupalci.workflows.yml'
+
+variables:
+  # The module needs PHP 8.3 or later.
+  _TARGET_PHP: '8.3'
+  # Test against the lowest and the highest supported core.
+  OPT_IN_TEST_PREVIOUS_MAJOR: '1'
+  OPT_IN_TEST_NEXT_MINOR: '1'
+  OPT_IN_TEST_MAX_PHP: '1'

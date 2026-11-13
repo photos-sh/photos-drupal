@@ -1,0 +1,33 @@
+services:
+  _defaults:
+    autowire: true
+
+  logger.channel.photos_sh:
+    parent: logger.channel_base
+    arguments: ['photos_sh']
+
+  photos_sh.transport:
+    class: Drupal\photos_sh\Http\GuzzleTransport
+    arguments: ['@http_client']
+  PhotosSh\Transport\Transport: '@photos_sh.transport'
+
+  photos_sh.client_factory:
+    class: Drupal\photos_sh\PhotosClientFactory
+    arguments: ['@config.factory', '@photos_sh.transport', '@?key.repository']
+  Drupal\photos_sh\PhotosClientFactory: '@photos_sh.client_factory'
+
+  # The API client for other modules: \Drupal::service('photos_sh.client').
+  # Throws PhotosSh\Exception\InvalidInputException when no key is configured.
+  photos_sh.client:
+    class: PhotosSh\Photos
+    factory: ['@photos_sh.client_factory', 'get']
+  PhotosSh\Photos: '@photos_sh.client'
+
+  photos_sh.connection_status:
+    class: Drupal\photos_sh\ConnectionStatus
+    arguments: ['@photos_sh.client_factory']
+  Drupal\photos_sh\ConnectionStatus: '@photos_sh.connection_status'
+
+  photos_sh.image_bridge:
+    class: Drupal\photos_sh\ImageBridge
+  Drupal\photos_sh\ImageBridge: '@photos_sh.image_bridge'

@@ -1,0 +1,64 @@
+name: CI
+
+on:
+  push:
+    branches: [1.x]
+  pull_request:
+
+jobs:
+  test:
+    name: Coding standards and unit tests (Drupal ${{ matrix.drupal }}, PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - drupal: '^10.3'
+            php: '8.3'
+          - drupal: '^11'
+            php: '8.4'
+    steps:
+      - name: Check out the module
+        uses: actions/checkout@v4
+        with:
+          path: photos_sh
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: gd, curl, mbstring, pdo_sqlite, sqlite3, xml, zip
+          tools: composer
+
+      - name: Install ImageMagick
+        run: sudo apt-get update && sudo apt-get install -y imagemagick
+
+      - name: Create a Drupal project
+        run: |
+          composer create-project "drupal/recommended-project:${{ matrix.drupal }}" site --no-interaction
+          cd site
+          composer config minimum-stability dev
+          composer config prefer-stable true
+          # The checkout, ahead of packages.drupal.org: Composer takes a package
+          # from the first repository that has it, and once the module is
+          # released there, that would be the release and not this commit.
+          jq --indent 4 '.repositories = [{"type":"path","url":"../photos_sh","options":{"versions":{"drupal/photos_sh":"1.0.0"}}}] + .repositories' composer.json > composer.json.new
+          mv composer.json.new composer.json
+          composer require drupal/photos_sh:1.0.0 --no-interaction
+          composer require --dev drupal/core-dev drupal/imagemagick --no-interaction -W
+
+      - name: Coding standards (Drupal, DrupalPractice)
+        working-directory: site
+        run: vendor/bin/phpcs --standard=Drupal,DrupalPractice --extensions=php,module,inc,install,info,yml web/modules/contrib/photos_sh
+
+      - name: Unit tests
+        working-directory: site/web
+        run: ../vendor/bin/phpunit -c core modules/contrib/photos_sh/tests/src/Unit
+
+      # The kernel tests run with GD, and again with the ImageMagick toolkit
+      # (installed above; those tests skip themselves if it is missing).
+      - name: Kernel tests
+        working-directory: site/web
+        env:
+          SIMPLETEST_DB: sqlite://localhost//tmp/photos_sh_test.sqlite
+        run: ../vendor/bin/phpunit -c core modules/contrib/photos_sh/tests/src/Kernel

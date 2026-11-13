@@ -1,0 +1,26 @@
+<?php
+
+/**
+ * @file
+ * Install, update and runtime requirements for Photos.sh.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Hook\Attribute\LegacyRequirementsHook;
+use Drupal\photos_sh\Hook\RequirementsHooks;
+
+/**
+ * Implements hook_requirements().
+ *
+ * For Drupal before 11.3, which does not know hook_runtime_requirements().
+ * From 11.3 the attribute below stops this function from running and
+ * \Drupal\photos_sh\Hook\RequirementsHooks::runtime() takes over.
+ */
+#[LegacyRequirementsHook]
+function photos_sh_requirements(string $phase): array {
+  if ($phase !== 'runtime') {
+    return [];
+  }
+  return (new RequirementsHooks(\Drupal::service('photos_sh.connection_status'), \Drupal::currentUser()))->runtime();
+}

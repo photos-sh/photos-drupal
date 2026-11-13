@@ -1,0 +1,4 @@
+administer photos_sh:
+  title: 'Administer Photos.sh'
+  description: 'Set the Photos.sh API key and connection settings.'
+  restrict access: true

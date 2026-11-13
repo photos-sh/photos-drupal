@@ -1,0 +1,49 @@
+<?php
+
+/**
+ * @file
+ * Photos.sh image effects for image styles.
+ */
+
+declare(strict_types=1);
+
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_help().
+ */
+function photos_sh_help(string $route_name, RouteMatchInterface $route_match): ?string {
+  if ($route_name === 'help.page.photos_sh') {
+    $output = '<h2>' . t('About') . '</h2>';
+    $output .= '<p>' . t('Photos.sh adds image effects that call the Photos.sh API: remove the background, upscale, remove text, fix a photo for a marketplace, or run a preset. Add them to an image style; the derivative is made through the API the first time it is requested. Set the API key on the <a href=":url">Photos.sh settings page</a>.', [
+      ':url' => Url::fromRoute('photos_sh.settings')->toString(),
+    ]) . '</p>';
+    return $output;
+  }
+  return NULL;
+}
+
+/**
+ * Implements hook_image_toolkit_operation_alter().
+ *
+ * Adds the "photos_sh_load" operation for the ImageMagick toolkit, when the
+ * ImageMagick module is installed. (Its class extends one from that module,
+ * so it cannot sit in a Plugin/ directory, which Drupal scans on every site.)
+ */
+function photos_sh_image_toolkit_operation_alter(array &$definitions): void {
+  $base = 'Drupal\imagemagick\Plugin\ImageToolkit\Operation\imagemagick\ImagemagickImageToolkitOperationBase';
+  if (!\Drupal::moduleHandler()->moduleExists('imagemagick') || !class_exists($base)) {
+    return;
+  }
+  $definitions['photos_sh_imagemagick_load'] = [
+    'id' => 'photos_sh_imagemagick_load',
+    'toolkit' => 'imagemagick',
+    'operation' => 'photos_sh_load',
+    'label' => new TranslatableMarkup('Load image data'),
+    'description' => new TranslatableMarkup('Replaces the image with encoded image data.'),
+    'class' => 'Drupal\photos_sh\ImageMagick\LoadData',
+    'provider' => 'photos_sh',
+  ];
+}

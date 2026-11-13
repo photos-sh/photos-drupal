@@ -1,0 +1,177 @@
+photos_sh.settings:
+  type: config_object
+  label: 'Photos.sh settings'
+  mapping:
+    api_key:
+      type: string
+      label: 'API key'
+    key_id:
+      type: string
+      label: 'Key module key'
+    base_url:
+      type: uri
+      label: 'API base URL'
+    timeout:
+      type: integer
+      label: 'Request timeout in seconds'
+
+image.effect.photos_sh_remove_background:
+  type: mapping
+  label: 'Photos.sh remove background'
+  mapping:
+    background:
+      type: string
+      label: 'Background colour'
+    crop:
+      type: boolean
+      label: 'Crop to the subject'
+    padding:
+      type: integer
+      label: 'Padding in pixels'
+
+image.effect.photos_sh_upscale:
+  type: mapping
+  label: 'Photos.sh upscale'
+  mapping:
+    scale:
+      type: integer
+      label: 'Scale'
+
+image.effect.photos_sh_remove_text:
+  type: mapping
+  label: 'Photos.sh remove text'
+  mapping:
+    region:
+      type: string
+      label: 'Region'
+
+image.effect.photos_sh_fix:
+  type: mapping
+  label: 'Photos.sh fix for a marketplace'
+  mapping:
+    marketplace:
+      type: string
+      label: 'Marketplace'
+    format:
+      type: string
+      label: 'Output format'
+
+image.effect.photos_sh_preset:
+  type: mapping
+  label: 'Photos.sh preset'
+  mapping:
+    preset:
+      type: string
+      label: 'Preset'
+    format:
+      type: string
+      label: 'Output format'
+
+image.effect.photos_sh_enhance:
+  type: mapping
+  label: 'Photos.sh fix light and colour'
+  mapping:
+    mode:
+      type: string
+      label: 'Automatic or custom settings'
+    brightness:
+      type: integer
+      label: 'Brightness'
+    contrast:
+      type: integer
+      label: 'Contrast'
+    saturation:
+      type: integer
+      label: 'Saturation'
+    sharpen:
+      type: integer
+      label: 'Sharpening'
+
+image.effect.photos_sh_denoise:
+  type: mapping
+  label: 'Photos.sh remove noise'
+  mapping:
+    strength:
+      type: integer
+      label: 'Strength'
+
+image.effect.photos_sh_colorize:
+  type: mapping
+  label: 'Photos.sh colourise'
+  mapping:
+    strength:
+      type: integer
+      label: 'Strength'
+
+image.effect.photos_sh_restore_faces:
+  type: mapping
+  label: 'Photos.sh restore faces'
+  mapping:
+    strength:
+      type: integer
+      label: 'Strength'
+
+image.effect.photos_sh_blur_faces:
+  type: mapping
+  label: 'Photos.sh hide faces'
+  mapping:
+    mode:
+      type: string
+      label: 'Blur, pixelate or fill'
+    strength:
+      type: integer
+      label: 'Strength'
+    color:
+      type: string
+      label: 'Colour that covers the faces'
+
+image.effect.photos_sh_crop:
+  type: mapping
+  label: 'Photos.sh crop to a shape'
+  mapping:
+    shape:
+      type: string
+      label: 'Shape'
+    custom:
+      type: string
+      label: 'Custom shape as width:height'
+    focus:
+      type: string
+      label: 'What to keep in the crop'
+    close:
+      type: boolean
+      label: 'Crop close'
+
+image.effect.photos_sh_expand:
+  type: mapping
+  label: 'Photos.sh expand to a shape'
+  mapping:
+    shape:
+      type: string
+      label: 'Shape'
+    custom:
+      type: string
+      label: 'Custom shape as width:height'
+    fill:
+      type: string
+      label: 'Inpaint or colour'
+    colour:
+      type: string
+      label: 'Fill colour'
+
+image.effect.photos_sh_watermark:
+  type: mapping
+  label: 'Photos.sh watermark with text'
+  mapping:
+    text:
+      type: string
+      label: 'Text'
+    position:
+      type: string
+      label: 'Position'
+    size:
+      type: integer
+      label: 'Size as a percentage of the photo width'
+    opacity:
+      type: integer
+      label: 'Opacity'

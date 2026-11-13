@@ -1,0 +1,5 @@
+photos_sh.settings:
+  title: 'Photos.sh'
+  description: 'Set the Photos.sh API key and see the connection status.'
+  route_name: photos_sh.settings
+  parent: system.admin_config_media
