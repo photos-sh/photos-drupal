@@ -82,6 +82,11 @@ class EffectsTest extends PhotosShKernelTestBase {
       ],
       ['jpg', 50, 40, FALSE], 'jpg', [NULL, NULL],
     ];
+    yield 'remove background, a studio shot' => [
+      'photos_sh_remove_background', ['background' => '', 'crop' => FALSE, 'padding' => 0, 'studio' => TRUE],
+      '/api/v1/remove-background', ['format' => 'png', 'studio' => 'true'],
+      ['png', 80, 60, TRUE], 'png', [80, 60],
+    ];
     yield 'upscale' => [
       'photos_sh_upscale', ['scale' => 3],
       '/api/v1/upscale', ['scale' => '3', 'format' => 'jpg'],

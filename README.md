@@ -58,7 +58,7 @@ Add them to an image style at **Configuration > Media > Image styles**.
 
 | Effect | Options | Result |
 |---|---|---|
-| Remove background | Background colour (`#rrggbb`, `white`, `black`, or empty), crop to the subject, padding | A transparent **PNG** when there is no colour. With a colour the image keeps its format (PNG, JPEG or WebP; anything else becomes PNG). Cropping makes the size unknown until the image is made. |
+| Remove background | Background colour (`#rrggbb`, `white`, `black`, or empty), crop to the subject, padding, studio shot | A transparent **PNG** when there is no colour. With a colour the image keeps its format (PNG, JPEG or WebP; anything else becomes PNG). Cropping makes the size unknown until the image is made. "Studio shot" is for product photos on a plain light backdrop (a light tent): it also keeps what clearly stands out from the backdrop and touches the product, such as the box, case or lid shown with a bottle, but not shadows or the floor. A photo without a plain light backdrop is cut out as without it. |
 | Upscale | 2x, 3x or 4x | The same format, each side multiplied by the scale. |
 | Remove text | Region: text off the product, or all text | The same size and format. |
 | Fix for a marketplace | Marketplace (Amazon, eBay, Etsy, Shopify, Google, Allegro, Zalando), output format | The marketplace decides the size and background. The format is the one you choose (JPEG by default); a result in another format is converted. |
@@ -95,7 +95,9 @@ processed. Where the API decides the size, the size is reported as unknown.
 - **Some results are only as good as the model.** Crop falls back to the
   middle of the photo when it finds no subject or face, and Hide faces leaves
   the photo as it is when it finds no face. Both write a note to the
-  `photos_sh` log channel; the derivative is still made.
+  `photos_sh` log channel; the derivative is still made. Remove background
+  gives the photo back unchanged when it finds no subject (one covering under
+  3% of the photo does not count).
 - **Failure leaves no derivative.** If the API fails (out of credits, key
   refused, busy, unreachable, a photo it cannot process), the effect fails, no
   derivative is written, the request gets Drupal's usual "Error generating

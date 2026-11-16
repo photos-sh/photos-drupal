@@ -262,7 +262,12 @@ class EffectFormsTest extends PhotosShKernelTestBase {
    */
   public function testSubmitStoresConfiguration(): void {
     $effect = $this->effect('photos_sh_remove_background');
-    $form_state = (new FormState())->setValues(['background' => ' #FFFFFF ', 'crop' => 0, 'padding' => 30]);
+    $form_state = (new FormState())->setValues([
+      'background' => ' #FFFFFF ',
+      'crop' => 0,
+      'padding' => 30,
+      'studio' => 1,
+    ]);
     $form = [];
     $effect->submitConfigurationForm($form, $form_state);
     // Padding only means something with cropping.
@@ -270,6 +275,7 @@ class EffectFormsTest extends PhotosShKernelTestBase {
       'background' => '#ffffff',
       'crop' => FALSE,
       'padding' => 0,
+      'studio' => TRUE,
     ], $effect->getConfiguration()['data']);
 
     $effect = $this->effect('photos_sh_upscale');
@@ -378,6 +384,7 @@ class EffectFormsTest extends PhotosShKernelTestBase {
       'background #fff000, cropped, padding 8 px',
       $render('photos_sh_remove_background', $data),
     );
+    $this->assertSame('transparent, studio shot', $render('photos_sh_remove_background', ['studio' => TRUE]));
     $this->assertSame('3×', $render('photos_sh_upscale', ['scale' => 3]));
     $this->assertSame('all text', $render('photos_sh_remove_text', ['region' => 'all']));
     $this->assertSame('eBay, JPG', $render('photos_sh_fix', ['marketplace' => 'ebay']));

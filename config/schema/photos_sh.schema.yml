@@ -28,6 +28,9 @@ image.effect.photos_sh_remove_background:
     padding:
       type: integer
       label: 'Padding in pixels'
+    studio:
+      type: boolean
+      label: 'Studio shot: keep the box, case or lid shown with the product'
 
 image.effect.photos_sh_upscale:
   type: mapping

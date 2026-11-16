@@ -15,7 +15,9 @@ use PhotosSh\Photos;
  * Removes the background with Photos.sh.
  *
  * Without a background colour the result is a transparent PNG. With one, the
- * image keeps its format (png, jpg or webp; anything else becomes png).
+ * image keeps its format (png, jpg or webp; anything else becomes png). For a
+ * studio shot (a product on a plain light backdrop) the box, case or lid shown
+ * with the product can be kept too.
  */
 #[ImageEffect(
   id: 'photos_sh_remove_background',
@@ -28,7 +30,7 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return ['background' => '', 'crop' => FALSE, 'padding' => 0];
+    return ['background' => '', 'crop' => FALSE, 'padding' => 0, 'studio' => FALSE];
   }
 
   /**
@@ -45,6 +47,7 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
       background: $background !== '' ? $background : NULL,
       crop: $crop ? TRUE : NULL,
       padding: $crop && $padding > 0 ? $padding : NULL,
+      studio: !empty($this->configuration['studio']) ? TRUE : NULL,
     );
   }
 
@@ -74,6 +77,9 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
     $parts[] = $background !== '' ? $this->t('background @colour', ['@colour' => $background]) : $this->t('transparent');
     if (!empty($this->configuration['crop'])) {
       $parts[] = $this->t('cropped, padding @padding px', ['@padding' => (int) $this->configuration['padding']]);
+    }
+    if (!empty($this->configuration['studio'])) {
+      $parts[] = $this->t('studio shot');
     }
     return ['#markup' => implode(', ', $parts)] + parent::getSummary();
   }
@@ -106,6 +112,12 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
       '#step' => 1,
       '#states' => ['visible' => [':input[name="crop"]' => ['checked' => TRUE]]],
     ];
+    $form['studio'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Studio shot'),
+      '#description' => $this->t('The product photos are taken on a plain light backdrop (a light tent): background removal also keeps the box, case or lid shown with the product. A photo without a plain light backdrop is cut out as usual.'),
+      '#default_value' => !empty($this->configuration['studio']),
+    ];
     return $form;
   }
 
@@ -128,6 +140,7 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
     $this->configuration['background'] = strtolower(trim((string) $form_state->getValue('background')));
     $this->configuration['crop'] = (bool) $form_state->getValue('crop');
     $this->configuration['padding'] = $this->configuration['crop'] ? (int) $form_state->getValue('padding') : 0;
+    $this->configuration['studio'] = (bool) $form_state->getValue('studio');
   }
 
 }

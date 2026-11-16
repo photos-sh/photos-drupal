@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+- Remove background: a "Studio shot" option (`studio`, off by default) for
+  product photos on a plain light backdrop (a light tent). Background removal
+  then also keeps the box, case or lid shown with the product. The API is sent
+  `studio=true` only when it is on. In the effect's summary and its
+  configuration schema. Image styles saved before keep working, with the
+  option off.
+- Needs photos-sh/photos 1.1 (`removeBackground(studio: …)`).
+
 ## 1.0.0 (unreleased)
 
 First release.
