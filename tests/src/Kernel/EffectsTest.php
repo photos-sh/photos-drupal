@@ -87,6 +87,18 @@ class EffectsTest extends PhotosShKernelTestBase {
       '/api/v1/remove-background', ['format' => 'png', 'studio' => 'true'],
       ['png', 80, 60, TRUE], 'png', [80, 60],
     ];
+    yield 'remove background with Lumen' => [
+      'photos_sh_remove_background',
+      ['background' => '', 'crop' => FALSE, 'padding' => 0, 'studio' => FALSE, 'model' => 'lumen'],
+      '/api/v1/remove-background', ['format' => 'png', 'model' => 'lumen'],
+      ['png', 80, 60, TRUE], 'png', [80, 60],
+    ];
+    yield 'remove background with Muse, a studio shot' => [
+      'photos_sh_remove_background',
+      ['background' => '', 'crop' => FALSE, 'padding' => 0, 'studio' => TRUE, 'model' => 'muse'],
+      '/api/v1/remove-background', ['format' => 'png', 'studio' => 'true', 'model' => 'muse'],
+      ['png', 80, 60, TRUE], 'png', [80, 60],
+    ];
     yield 'upscale' => [
       'photos_sh_upscale', ['scale' => 3],
       '/api/v1/upscale', ['scale' => '3', 'format' => 'jpg'],
@@ -300,6 +312,24 @@ class EffectsTest extends PhotosShKernelTestBase {
     $this->assertStringContainsString('filename="image.png"', (string) $requests[1]->getBody());
     $this->assertSame('format=png&scale=2', $this->sortedQuery($requests[1]->getUri()->getQuery()));
     $this->assertSame([160, 120], array_slice(getimagesize($uri), 0, 2));
+  }
+
+  /**
+   * Atlas, and an effect saved before there was a model, send no model.
+   *
+   * Both leave the model to the API's default.
+   */
+  public function testRemoveBackgroundLeavesAtlasToTheApi(): void {
+    $this->queueImage($this->imageBytes(80, 60, 'png', TRUE), 'image/png', 80, 60);
+    $this->queueImage($this->imageBytes(80, 60, 'png', TRUE), 'image/png', 80, 60);
+    $before = ['background' => '', 'crop' => FALSE, 'padding' => 0, 'studio' => FALSE];
+    $this->derive($this->style([['photos_sh_remove_background', ['model' => 'atlas'] + $before]], 'photos_atlas'));
+    $this->derive($this->style([['photos_sh_remove_background', $before]], 'photos_before_models'));
+
+    $requests = $this->requests();
+    $this->assertCount(2, $requests);
+    $this->assertSame('format=png', $this->sortedQuery($requests[0]->getUri()->getQuery()));
+    $this->assertSame('format=png', $this->sortedQuery($requests[1]->getUri()->getQuery()));
   }
 
   /**

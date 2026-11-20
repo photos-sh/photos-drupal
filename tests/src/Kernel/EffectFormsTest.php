@@ -58,6 +58,11 @@ class EffectFormsTest extends PhotosShKernelTestBase {
       ['background' => '#fff', 'crop' => 0, 'padding' => 0],
       ['background'],
     ];
+    yield 'unknown model' => [
+      'photos_sh_remove_background',
+      ['background' => '', 'crop' => 0, 'padding' => 0, 'model' => 'orion'],
+      ['model'],
+    ];
     yield 'scale out of range' => [
       'photos_sh_upscale',
       ['scale' => 8],
@@ -194,6 +199,9 @@ class EffectFormsTest extends PhotosShKernelTestBase {
     $empty = ['background' => '', 'crop' => 0, 'padding' => 0];
     $this->assertSame([], $this->errorsFor($id, $white));
     $this->assertSame([], $this->errorsFor($id, $empty));
+    foreach (['atlas', 'lumen', 'muse'] as $model) {
+      $this->assertSame([], $this->errorsFor($id, ['model' => $model] + $empty), $model);
+    }
     $this->assertSame([], $this->errorsFor('photos_sh_upscale', ['scale' => '4']));
     $this->assertSame([], $this->errorsFor('photos_sh_remove_text', ['region' => 'all']));
     $this->assertSame([], $this->errorsFor('photos_sh_enhance', ['mode' => 'auto']));
@@ -267,6 +275,7 @@ class EffectFormsTest extends PhotosShKernelTestBase {
       'crop' => 0,
       'padding' => 30,
       'studio' => 1,
+      'model' => 'lumen',
     ]);
     $form = [];
     $effect->submitConfigurationForm($form, $form_state);
@@ -276,7 +285,13 @@ class EffectFormsTest extends PhotosShKernelTestBase {
       'crop' => FALSE,
       'padding' => 0,
       'studio' => TRUE,
+      'model' => 'lumen',
     ], $effect->getConfiguration()['data']);
+
+    // Without a model (or with one the module does not know), Atlas.
+    $effect = $this->effect('photos_sh_remove_background');
+    $effect->submitConfigurationForm($form, (new FormState())->setValues(['background' => '', 'crop' => 0]));
+    $this->assertSame('atlas', $effect->getConfiguration()['data']['model']);
 
     $effect = $this->effect('photos_sh_upscale');
     $effect->submitConfigurationForm($form, (new FormState())->setValues(['scale' => '3']));
@@ -348,6 +363,23 @@ class EffectFormsTest extends PhotosShKernelTestBase {
   }
 
   /**
+   * Remove background offers the three models, Atlas first, each described.
+   */
+  public function testRemoveBackgroundOffersTheModels(): void {
+    $form = $this->effect('photos_sh_remove_background')->buildConfigurationForm([], new FormState());
+    $this->assertSame('radios', $form['model']['#type']);
+    $this->assertSame(['atlas', 'lumen', 'muse'], array_keys($form['model']['#options']));
+    $this->assertSame('atlas', $form['model']['#default_value']);
+    $this->assertStringContainsString('Everyday product photos', (string) $form['model']['atlas']['#description']);
+    $this->assertStringContainsString('Pale packaging', (string) $form['model']['lumen']['#description']);
+    $this->assertStringContainsString('People', (string) $form['model']['muse']['#description']);
+
+    $effect = $this->container->get('plugin.manager.image.effect')
+      ->createInstance('photos_sh_remove_background', ['data' => ['model' => 'muse']]);
+    $this->assertSame('muse', $effect->buildConfigurationForm([], new FormState())['model']['#default_value']);
+  }
+
+  /**
    * The effects that can mislead say so, in a plain sentence of the form.
    *
    * @dataProvider provideCautions
@@ -385,6 +417,12 @@ class EffectFormsTest extends PhotosShKernelTestBase {
       $render('photos_sh_remove_background', $data),
     );
     $this->assertSame('transparent, studio shot', $render('photos_sh_remove_background', ['studio' => TRUE]));
+    $this->assertSame('transparent', $render('photos_sh_remove_background', ['model' => 'atlas']));
+    $this->assertSame('transparent, model Lumen', $render('photos_sh_remove_background', ['model' => 'lumen']));
+    $this->assertSame(
+      'transparent, studio shot, model Muse',
+      $render('photos_sh_remove_background', ['studio' => TRUE, 'model' => 'muse']),
+    );
     $this->assertSame('3×', $render('photos_sh_upscale', ['scale' => 3]));
     $this->assertSame('all text', $render('photos_sh_remove_text', ['region' => 'all']));
     $this->assertSame('eBay, JPG', $render('photos_sh_fix', ['marketplace' => 'ebay']));

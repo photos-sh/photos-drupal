@@ -7,6 +7,7 @@ namespace Drupal\photos_sh\Plugin\ImageEffect;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\image\Attribute\ImageEffect;
+use Drupal\photos_sh\Catalog;
 use PhotosSh\ImageResult;
 use PhotosSh\Input;
 use PhotosSh\Photos;
@@ -17,7 +18,8 @@ use PhotosSh\Photos;
  * Without a background colour the result is a transparent PNG. With one, the
  * image keeps its format (png, jpg or webp; anything else becomes png). For a
  * studio shot (a product on a plain light backdrop) the box, case or lid shown
- * with the product can be kept too.
+ * with the product can be kept too. The model that finds the subject can be
+ * chosen: Atlas (the API's default), Lumen or Muse.
  */
 #[ImageEffect(
   id: 'photos_sh_remove_background',
@@ -30,7 +32,24 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return ['background' => '', 'crop' => FALSE, 'padding' => 0, 'studio' => FALSE];
+    return [
+      'background' => '',
+      'crop' => FALSE,
+      'padding' => 0,
+      'studio' => FALSE,
+      'model' => Catalog::DEFAULT_MODEL,
+    ];
+  }
+
+  /**
+   * The model to send to the API, or NULL to leave it to the API's default.
+   *
+   * Atlas is the API's default, so it is not sent; an unknown model is not
+   * sent either.
+   */
+  protected function apiModel(): ?string {
+    $model = (string) ($this->configuration['model'] ?? '');
+    return $model !== Catalog::DEFAULT_MODEL && isset(Catalog::models()[$model]) ? $model : NULL;
   }
 
   /**
@@ -48,6 +67,7 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
       crop: $crop ? TRUE : NULL,
       padding: $crop && $padding > 0 ? $padding : NULL,
       studio: !empty($this->configuration['studio']) ? TRUE : NULL,
+      model: $this->apiModel(),
     );
   }
 
@@ -80,6 +100,10 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
     }
     if (!empty($this->configuration['studio'])) {
       $parts[] = $this->t('studio shot');
+    }
+    $model = $this->apiModel();
+    if ($model !== NULL) {
+      $parts[] = $this->t('model @model', ['@model' => Catalog::models()[$model]]);
     }
     return ['#markup' => implode(', ', $parts)] + parent::getSummary();
   }
@@ -118,6 +142,18 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
       '#description' => $this->t('The product photos are taken on a plain light backdrop (a light tent): background removal also keeps the box, case or lid shown with the product. A photo without a plain light backdrop is cut out as usual.'),
       '#default_value' => !empty($this->configuration['studio']),
     ];
+    $model = (string) ($this->configuration['model'] ?? '');
+    $form['model'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Model'),
+      '#description' => $this->t('The model that finds the subject. Each costs the same; try another when one drops part of the product.'),
+      '#options' => Catalog::models(),
+      '#default_value' => isset(Catalog::models()[$model]) ? $model : Catalog::DEFAULT_MODEL,
+      '#required' => TRUE,
+    ];
+    foreach (Catalog::modelDescriptions() as $key => $description) {
+      $form['model'][$key]['#description'] = $description;
+    }
     return $form;
   }
 
@@ -130,6 +166,10 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
     if ($background !== '' && !preg_match('/^(#[0-9a-fA-F]{6}|white|black)$/', $background)) {
       $form_state->setErrorByName('background', $this->t('Enter a colour as #rrggbb, or white or black, or leave the field empty.'));
     }
+    $model = $form_state->getValue('model');
+    if ($model !== NULL && !isset(Catalog::models()[(string) $model])) {
+      $form_state->setErrorByName('model', $this->t('Choose a model.'));
+    }
   }
 
   /**
@@ -141,6 +181,8 @@ class RemoveBackgroundImageEffect extends PhotosShEffectBase {
     $this->configuration['crop'] = (bool) $form_state->getValue('crop');
     $this->configuration['padding'] = $this->configuration['crop'] ? (int) $form_state->getValue('padding') : 0;
     $this->configuration['studio'] = (bool) $form_state->getValue('studio');
+    $model = (string) $form_state->getValue('model');
+    $this->configuration['model'] = isset(Catalog::models()[$model]) ? $model : Catalog::DEFAULT_MODEL;
   }
 
 }

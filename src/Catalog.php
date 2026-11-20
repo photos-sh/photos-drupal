@@ -58,6 +58,41 @@ final class Catalog {
   }
 
   /**
+   * The model background removal uses when none is chosen.
+   */
+  public const DEFAULT_MODEL = 'atlas';
+
+  /**
+   * The models background removal can find the subject with.
+   *
+   * Each costs the same.
+   *
+   * @return array<string, \Drupal\Core\StringTranslation\TranslatableMarkup>
+   *   Labels keyed by the API's model name.
+   */
+  public static function models(): array {
+    return [
+      'atlas' => new TranslatableMarkup('Atlas (default)'),
+      'lumen' => new TranslatableMarkup('Lumen'),
+      'muse' => new TranslatableMarkup('Muse'),
+    ];
+  }
+
+  /**
+   * What each background removal model is recommended for.
+   *
+   * @return array<string, \Drupal\Core\StringTranslation\TranslatableMarkup>
+   *   Descriptions keyed by the API's model name.
+   */
+  public static function modelDescriptions(): array {
+    return [
+      'atlas' => new TranslatableMarkup('Everyday product photos: a product alone or with its box, on any backdrop.'),
+      'lumen' => new TranslatableMarkup("Pale packaging on a light backdrop, such as a cream or wooden box beside a bottle, and close-ups where the product fills the photo. On those, Atlas can keep the bottle and drop the box. It may keep a dark backdrop at the photo's edge, and can cut away part of an open frame or wire stand."),
+      'muse' => new TranslatableMarkup('People: portraits, and models wearing the product.'),
+    ];
+  }
+
+  /**
    * Built-in presets.
    *
    * @return array<string, \Drupal\Core\StringTranslation\TranslatableMarkup>

@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+## 1.1.0 (2026-11-20)
+
+- Remove background: a "Model" choice for the model that finds the subject:
+  Atlas (the default; everyday product photos), Lumen (pale packaging on a
+  light backdrop, and close-ups where the product fills the photo) or Muse
+  (people: portraits, and models wearing the product). Each costs the same.
+  The API is sent `model=lumen` or `model=muse` only when one of those is
+  chosen; with Atlas the parameter is left out and the API's default applies.
+  Radios with a description of each model on the effect's form; in the
+  effect's summary and its configuration schema (`model`). Image styles saved
+  before keep working, with Atlas.
+- Needs photos-sh/photos 1.3 (`removeBackground(model: …)`).
+
+## 1.0.1 (2026-11-16)
+
 - Remove background: a "Studio shot" option (`studio`, off by default) for
   product photos on a plain light backdrop (a light tent). Background removal
   then also keeps the box, case or lid shown with the product. The API is sent
@@ -10,7 +25,7 @@
   option off.
 - Needs photos-sh/photos 1.1 (`removeBackground(studio: …)`).
 
-## 1.0.0 (unreleased)
+## 1.0.0 (2026-11-13)
 
 First release.
 
